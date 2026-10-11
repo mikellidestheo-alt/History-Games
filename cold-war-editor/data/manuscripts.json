@@ -147,17 +147,17 @@
       },
       "sentences": [
         "The origins of the present conflict are not obscure.",
+        "Responsibility for the division of Europe rests with the Soviet Union and the doctrine that directs it.",
         "At Yalta in February 1945, Marshal Stalin pledged free elections in the liberated nations of Eastern Europe; within three years, every one of them had a communist government imposed upon it.",
         "Poland, for whose freedom Britain had gone to war, was handed to the Lublin Committee, a body chosen in Moscow.",
         "This was no accident of war but the working out of a creed that holds conflict with the capitalist world to be inevitable.",
-        "The United States, which had demobilised with remarkable speed, responded only slowly: the Truman Doctrine of 1947 was a reply to Soviet pressure on Greece and Turkey, not its cause.",
-        "Responsibility for the division of Europe therefore rests with the Soviet Union and the doctrine that directs it."
+        "The United States, which had demobilised with remarkable speed, responded only slowly: the Truman Doctrine of 1947 was a reply to Soviet pressure on Greece and Turkey, not its cause."
       ],
-      "wordCount": 131,
+      "wordCount": 130,
       "key": {
         "mainArgument": [
-          6,
-          4
+          2,
+          5
         ],
         "concessions": [],
         "subMessages": [],
@@ -167,7 +167,7 @@
         "stamp": "PUBLISH"
       },
       "trap": "none",
-      "explanation": "Soviet expansion is presented as the product of communist doctrine (sentence 4), and the USA is cast as reacting slowly (sentence 5). The conclusion places responsibility on the USSR.",
+      "explanation": "Soviet expansion is presented as the product of communist doctrine (sentence 5), and the USA is cast as reacting slowly (sentence 6). Sentence 2 places responsibility on the USSR.",
       "anchors": [
         "Yalta Conference and the Declaration on Liberated Europe (February 1945)",
         "Truman Doctrine (March 1947)"
@@ -192,14 +192,14 @@
         "It must be admitted that American policy in 1945 was not always wise.",
         "The abrupt curtailment of Lend-Lease in May 1945 wounded Soviet pride, and President Truman's sharp words to Molotov that April did little to build trust.",
         "Yet these were the irritations of an uneasy partnership, not the causes of its collapse.",
+        "The Cold War began not with American impatience but with Stalin's calculated bad faith.",
         "Roosevelt went to Yalta prepared to trust a wartime ally; Stalin went there prepared to say whatever would secure his aims.",
-        "His promises on Poland were broken almost at once, and at Potsdam he presented the Western powers with frontiers already settled by the Red Army.",
-        "The Cold War began not with American impatience but with Stalin's calculated bad faith."
+        "His promises on Poland were broken almost at once, and at Potsdam he presented the Western powers with frontiers already settled by the Red Army."
       ],
       "wordCount": 113,
       "key": {
         "mainArgument": [
-          6,
+          4,
           3
         ],
         "concessions": [
@@ -238,15 +238,15 @@
       "sentences": [
         "No one who has seen the police states of Eastern Europe can feel any sympathy for the system that built them.",
         "But the historian's task is to ask why the wartime alliance failed, and here Washington's record is troubling.",
+        "By refusing to recognise legitimate Soviet security needs, American policy turned a difficult ally into a determined enemy.",
         "Within weeks of Roosevelt's death, the new administration abandoned his patient diplomacy for confrontation.",
         "The atomic bomb, mentioned to Stalin at Potsdam and used on Hiroshima within a fortnight, was treated as a lever to force Soviet concessions in Europe.",
-        "A nation that had lost millions to a German invasion could hardly be expected to accept hostile governments on its western border.",
-        "By refusing to recognise legitimate Soviet security needs, American policy turned a difficult ally into a determined enemy."
+        "A nation that had lost millions to a German invasion could hardly be expected to accept hostile governments on its western border."
       ],
       "wordCount": 119,
       "key": {
         "mainArgument": [
-          6
+          3
         ],
         "concessions": [],
         "subMessages": [
@@ -258,7 +258,7 @@
         "stamp": "REJECT"
       },
       "trap": "tone",
-      "explanation": "The anti-communist opening (sentence 1) is not the argument. Blame falls on US confrontation and atomic diplomacy (sentences 3–4), which ignored Soviet security needs (sentence 5).",
+      "explanation": "The anti-communist opening (sentence 1) is not the argument. Blame falls on US confrontation and atomic diplomacy (sentences 4–5), which ignored Soviet security needs (sentence 6).",
       "anchors": [
         "Potsdam Conference (July 1945)",
         "Hiroshima (6 August 1945)"
@@ -364,23 +364,23 @@
         "redacted": false
       },
       "sentences": [
+        "The Cold War was the price the United States paid for insisting that the world be remade in the image of its own economy.",
         "No serious historian denies that Soviet rule in Eastern Europe was harsh.",
         "But to begin the story there is to begin it in the middle.",
         "From 1944 onwards, American planners were preoccupied with one question: how to prevent a return of the Depression.",
         "Their answer was an open world economy in which American goods and capital could move freely.",
         "A Soviet sphere closed to American trade was therefore not a regional problem but a threat to the whole design.",
         "The Marshall Plan of 1947 offered aid on conditions of economic openness and joint planning that Moscow could never accept, so that a Soviet refusal would divide Europe on American terms.",
-        "Soviet repression was a response to this pressure, not its origin.",
-        "The Cold War was the price the United States paid for insisting that the world be remade in the image of its own economy."
+        "Soviet repression was a response to this pressure, not its origin."
       ],
       "wordCount": 145,
       "key": {
         "mainArgument": [
-          8,
-          5
+          1,
+          6
         ],
         "concessions": [
-          1
+          2
         ],
         "subMessages": [],
         "school": "revisionist",
@@ -389,7 +389,7 @@
         "stamp": "PUBLISH"
       },
       "trap": "concession",
-      "explanation": "Sentence 1 concedes Soviet harshness, but sentence 2 dismisses it as 'the middle' of the story. The argument rests on America's need for an open world economy (sentences 3–5), with Soviet repression recast as a response (sentence 7).",
+      "explanation": "Sentence 2 concedes Soviet harshness, but sentence 3 dismisses it as 'the middle' of the story. The argument rests on America's need for an open world economy (sentences 4–6), with Soviet repression recast as a response (sentence 8).",
       "anchors": [
         "Marshall Plan announced (June 1947)",
         "Molotov leaves the Paris conference (July 1947)"
@@ -414,13 +414,13 @@
         "It is also true that American leaders sincerely wished to save American lives.",
         "Yet the private papers of Truman's advisers reveal a second purpose that has too long been ignored.",
         "Secretary of State Byrnes hoped the new weapon would make Moscow more pliable in Europe, and at the London meeting of foreign ministers in September 1945 he negotiated as though the American monopoly entitled him to set the terms.",
-        "Faced with a rival that had just shown it could destroy a city with a single aircraft, Stalin drew the only conclusion open to him: that the West meant to deny the Soviet Union the security its sacrifices had earned.",
-        "It was this attempt to turn atomic power into diplomatic advantage that turned a strained alliance into a Cold War."
+        "It was this attempt to turn atomic power into diplomatic advantage that turned a strained alliance into a Cold War.",
+        "Faced with a rival that had just shown it could destroy a city with a single aircraft, Stalin drew the only conclusion open to him: that the West meant to deny the Soviet Union the security its sacrifices had earned."
       ],
       "wordCount": 149,
       "key": {
         "mainArgument": [
-          6
+          5
         ],
         "concessions": [
           1,
@@ -458,23 +458,23 @@
         "redacted": false
       },
       "sentences": [
+        "Whatever the faults of American policy, it was Soviet doctrine that turned rivalry into a Cold War.",
         "The new critics are right that American policy served American business, and that Washington spoke of freedom while supporting regimes that were anything but free.",
         "They are right, too, that the Marshall Plan was not pure charity.",
         "But an offer of aid, however self-interested, is not an act of war.",
         "The decision to divide Europe was taken in Moscow in the summer of 1947, when the Soviet Union not only refused Marshall aid but forced Poland and Czechoslovakia to withdraw from talks they wished to join.",
         "Within months, the Cominform was declaring that the world had split into two hostile camps, and communist parties across Europe were told to abandon cooperation with their neighbours.",
-        "This was the language of a movement that believed history was on its side and conflict with capitalism unavoidable.",
-        "Whatever the faults of American policy, it was Soviet doctrine that turned rivalry into a Cold War."
+        "This was the language of a movement that believed history was on its side and conflict with capitalism unavoidable."
       ],
       "wordCount": 150,
       "key": {
         "mainArgument": [
-          7,
-          4
+          1,
+          5
         ],
         "concessions": [
-          1,
-          2
+          2,
+          3
         ],
         "subMessages": [],
         "school": "traditionalist",
@@ -483,7 +483,7 @@
         "stamp": "REJECT"
       },
       "trap": "concession",
-      "explanation": "Two sentences of revisionist concessions (1–2) are neutralised by sentence 3. The blame lands on Moscow's rejection of Marshall aid and the 'two camps' doctrine. The anti-war dossier is a second red herring.",
+      "explanation": "Two sentences of revisionist concessions (2–3) are neutralised by sentence 4. The blame lands on Moscow's rejection of Marshall aid and the 'two camps' doctrine. The anti-war dossier is a second red herring.",
       "anchors": [
         "Marshall Plan and Soviet rejection (June–July 1947)",
         "Founding of the Cominform (September 1947)"
@@ -552,15 +552,15 @@
         "For eleven months the Soviet Union tried to force two million civilians to accept its will, and the airlift that defeated it was a genuine achievement.",
         "Nothing in what follows excuses that.",
         "But the blockade did not come from nowhere.",
+        "The division of Germany, and with it the division of Europe, was the result of American decisions that Moscow could only react against.",
         "Since 1946 the United States had worked to rebuild western Germany as an economic partner, merging the British and American zones and, at the London conference of 1948, agreeing to create a separate West German state.",
         "The new currency introduced in the western zones in June 1948 threatened to wreck the economy of the Soviet zone overnight.",
-        "To a country invaded twice from German soil in thirty years, a revived western Germany tied to American power was intolerable.",
-        "The division of Germany, and with it the division of Europe, was the result of American decisions that Moscow could only react against."
+        "To a country invaded twice from German soil in thirty years, a revived western Germany tied to American power was intolerable."
       ],
       "wordCount": 149,
       "key": {
         "mainArgument": [
-          8
+          5
         ],
         "concessions": [
           1,
@@ -574,7 +574,7 @@
         "stamp": "PUBLISH"
       },
       "trap": "concession",
-      "explanation": "The first three sentences read like a traditionalist account of the blockade. Sentence 4 turns the argument: American decisions on Germany (sentences 5–6) threatened Soviet security (sentence 7) and caused the division.",
+      "explanation": "The first three sentences read like a traditionalist account of the blockade. Sentence 4 turns the argument: American decisions on Germany (sentences 6–7) threatened Soviet security (sentence 8) and caused the division.",
       "anchors": [
         "Bizonia (January 1947)",
         "London conference (February–June 1948)",
@@ -642,15 +642,15 @@
         "It is now common to describe the origins of the Cold War as a tragedy of mutual misunderstanding, in which two powers with defensive aims misread one another.",
         "There is some truth in this: Moscow certainly misjudged Western motives at times, and Soviet suspicion was often excessive.",
         "But the misreadings were not evenly shared.",
+        "The Cold War arose because American leaders chose to see a threat that the Soviet Union did not pose.",
         "Kennan's telegram of February 1946 portrayed a war-weary, devastated state as an expansionist force driven by ideology, and Washington built its policy on that picture.",
         "Soviet moves in Iran and Turkey in 1946, limited and soon abandoned, were treated as the opening of a world offensive.",
-        "The Soviet Union did not misunderstand American power; it understood it all too well.",
-        "The Cold War arose because American leaders chose to see a threat that the Soviet Union did not pose."
+        "The Soviet Union did not misunderstand American power; it understood it all too well."
       ],
       "wordCount": 133,
       "key": {
         "mainArgument": [
-          7,
+          4,
           3
         ],
         "concessions": [
@@ -727,24 +727,24 @@
         "redacted": false
       },
       "sentences": [
+        "The power vacuum made conflict likely; Soviet ideology made it certain.",
         "Recent scholarship has done well to remind us that some friction between the victors was inevitable.",
         "The defeat of Germany left a vacuum at the heart of Europe, and two powers with different systems and global reach were bound to compete to fill it.",
         "Both sides, moreover, made mistakes in 1945 and 1946.",
         "But inevitable friction is not the same as a Cold War.",
         "Competition could have been managed, as rivalries between great powers had been managed before, had the Soviet leadership been willing to accept any limit on its influence.",
-        "Instead, in February 1946 Stalin told Soviet voters that capitalism made future wars inevitable, and Soviet policy in Eastern Europe and Germany followed that conviction.",
-        "The power vacuum made conflict likely; Soviet ideology made it certain."
+        "Instead, in February 1946 Stalin told Soviet voters that capitalism made future wars inevitable, and Soviet policy in Eastern Europe and Germany followed that conviction."
       ],
       "wordCount": 127,
       "key": {
         "mainArgument": [
-          7,
-          5
+          1,
+          6
         ],
         "concessions": [
-          1,
           2,
-          3
+          3,
+          4
         ],
         "subMessages": [],
         "school": "traditionalist",
@@ -753,7 +753,7 @@
         "stamp": "REJECT"
       },
       "trap": "concession",
-      "explanation": "Sentences 1–3 use post-revisionist language (power vacuum, mistakes on both sides). Sentence 4 turns it: friction is not a Cold War, and only Soviet ideology made conflict certain.",
+      "explanation": "Sentences 2–4 use post-revisionist language (power vacuum, mistakes on both sides). Sentence 5 turns it: friction is not a Cold War, and only Soviet ideology made conflict certain.",
       "anchors": [
         "Stalin's election speech (February 1946)",
         "Soviet policy in Eastern Europe and Germany (1946–48)"
@@ -776,15 +776,15 @@
         "It would be comforting to find a villain.",
         "Traditional accounts found one in Moscow and their critics found one in Washington, and both can point to real misdeeds.",
         "But the search for a guilty party obscures the structure of the situation in 1945.",
+        "The Cold War was less a crime committed by either side than the predictable outcome of a bipolar world.",
         "The collapse of Germany and Japan, and the exhaustion of Britain and France, left only two powers capable of shaping the post-war world.",
         "Each had legitimate security interests in Central Europe, and those interests could not both be satisfied.",
-        "Whatever the leaders in Moscow and Washington had chosen to do, the question of Germany's future would have pulled them into rivalry.",
-        "The Cold War was less a crime committed by either side than the predictable outcome of a bipolar world."
+        "Whatever the leaders in Moscow and Washington had chosen to do, the question of Germany's future would have pulled them into rivalry."
       ],
       "wordCount": 123,
       "key": {
         "mainArgument": [
-          7
+          4
         ],
         "concessions": [
           2
@@ -798,7 +798,7 @@
         "stamp": "PUBLISH"
       },
       "trap": "neither_valid",
-      "explanation": "This 'neither side' argument is earned: sentences 4–6 explain how the power vacuum and clashing security interests made rivalry unavoidable. Sentence 2 acknowledges misdeeds but sets them aside.",
+      "explanation": "This 'neither side' argument is earned: sentences 5–7 explain how the power vacuum and clashing security interests made rivalry unavoidable. Sentence 2 acknowledges misdeeds but sets them aside.",
       "anchors": [
         "Defeat of Germany and Japan (1945)",
         "The German question (1945–49)"
@@ -820,22 +820,22 @@
         "redacted": false
       },
       "sentences": [
+        "The Cold War was not inevitable; it was made inevitable by the personality of the man in the Kremlin.",
         "The United States did not enter the post-war world with clean hands.",
         "Its leaders were often clumsy, its economic ambitions were real, and its monopoly of the atomic bomb could only alarm Moscow.",
         "Had the Soviet Union been led by a more ordinary statesman, these frictions might have been contained.",
         "The documents now emerging from Moscow show that it was not.",
         "Stalin's private telegrams to Molotov in late 1945 rebuke his foreign minister for the smallest sign of compromise with the West, and treat every Western gesture as a trap.",
-        "He could tolerate no independent centre of power anywhere within his reach, and no Western concession could have changed that.",
-        "The Cold War was not inevitable; it was made inevitable by the personality of the man in the Kremlin."
+        "He could tolerate no independent centre of power anywhere within his reach, and no Western concession could have changed that."
       ],
       "wordCount": 129,
       "key": {
         "mainArgument": [
-          7
+          1
         ],
         "concessions": [
-          1,
-          2
+          2,
+          3
         ],
         "subMessages": [],
         "school": "post_post_revisionist",
@@ -844,7 +844,7 @@
         "stamp": "PUBLISH"
       },
       "trap": "concession",
-      "explanation": "Sentences 1–2 concede revisionist points, and the USA is not vindicated. Sentence 3 turns it: new Soviet evidence (sentences 4–5) puts the blame on Stalin's personality.",
+      "explanation": "Sentences 2–3 concede revisionist points, and the USA is not vindicated. Sentence 4 turns it: new Soviet evidence (sentences 5–6) puts the blame on Stalin's personality.",
       "anchors": [
         "London Council of Foreign Ministers (September 1945)",
         "Stalin–Molotov correspondence (late 1945)"
@@ -864,21 +864,21 @@
         "redacted": true
       },
       "sentences": [
+        "The Soviet state, driven by an appetite for territory and influence, bears the responsibility for the Cold War.",
         "Some still insist that Washington was to blame for the Cold War, and admittedly American policy in 1945 lacked a clear plan.",
         "Yet the demobilisation of American forces was so rapid that by 1946 the United States could have done little to resist a Soviet advance.",
         "This hesitation is the clearest proof of American innocence.",
         "A power bent on domination does not disband its armies.",
         "The Soviet Union, by contrast, kept millions under arms, installed obedient regimes from the Baltic to the Balkans, and probed for weakness in Iran, Turkey and Greece.",
-        "The Truman Doctrine and NATO were the defensive answers of free nations to this relentless expansion.",
-        "The Soviet state, driven by an appetite for territory and influence, bears the responsibility for the Cold War."
+        "The Truman Doctrine and NATO were the defensive answers of free nations to this relentless expansion."
       ],
       "wordCount": 126,
       "key": {
         "mainArgument": [
-          7
+          1
         ],
         "concessions": [
-          1
+          2
         ],
         "subMessages": [],
         "school": "traditionalist",
@@ -887,7 +887,7 @@
         "stamp": "REJECT"
       },
       "trap": "trad_vs_ppr",
-      "explanation": "This blames the USSR, but in the traditional way. The USA is fully vindicated (sentences 3 and 6), the blame falls on the Soviet state's expansion rather than Stalin's personality or ideology, and no new evidence is used.",
+      "explanation": "This blames the USSR, but in the traditional way. The USA is fully vindicated (sentences 4 and 7), the blame falls on the Soviet state's expansion rather than Stalin's personality or ideology, and no new evidence is used.",
       "anchors": [
         "US demobilisation (1945–46)",
         "Iran and Turkey (1946)",
@@ -955,16 +955,16 @@
       "sentences": [
         "The revisionists were right that American economic aims alarmed Moscow, and the post-revisionists were right that the collapse of Germany made some rivalry unavoidable.",
         "Neither point, however, explains why the rivalry took the form it did.",
+        "The decisive cause of the Cold War lay in the ideas through which Stalin understood the post-war world.",
         "The evidence from the Soviet side now shows a leader who read the world through Marxist-Leninist categories.",
         "Stalin expected the capitalist powers to fall out among themselves, as he had told Soviet voters in February 1946, and he expected American forces to leave Europe within a few years.",
         "His policy in Germany, culminating in the Berlin Blockade, was a gamble based on these expectations.",
-        "When the Western powers drew together instead, creating NATO in 1949, it was because Stalin's ideological misreading had pushed them into it.",
-        "The decisive cause of the Cold War lay in the ideas through which Stalin understood the post-war world."
+        "When the Western powers drew together instead, creating NATO in 1949, it was because Stalin's ideological misreading had pushed them into it."
       ],
       "wordCount": 140,
       "key": {
         "mainArgument": [
-          7
+          3
         ],
         "concessions": [
           1
@@ -976,7 +976,7 @@
         "stamp": "PUBLISH"
       },
       "trap": "concession",
-      "explanation": "Sentence 1 names two other schools, which is a label trap. Sentence 2 turns away from both. New Soviet evidence (sentence 3) shows Stalin's ideological expectations driving his German policy and pushing the West into NATO.",
+      "explanation": "Sentence 1 names two other schools, which is a label trap. Sentence 2 turns away from both. New Soviet evidence (sentence 4) shows Stalin's ideological expectations driving his German policy and pushing the West into NATO.",
       "anchors": [
         "Stalin's election speech (February 1946)",
         "Berlin Blockade (1948–49)",
@@ -1000,15 +1000,15 @@
         "The opening of the Soviet archives has produced a flood of books blaming Stalin, and no one can now doubt the brutality they reveal.",
         "Stalin was a tyrant, and his secret police did terrible things in Eastern Europe.",
         "But the archives answer questions about Moscow; they say little about Washington.",
+        "However dark the Soviet record, the decisions that made the Cold War were taken by Americans pursuing American economic interests.",
         "American records show that from 1945 the United States set out to build a world economy run on American rules, centred on the dollar and open to American trade.",
         "The Marshall Plan was designed to bind Western Europe to that system, and its conditions were drafted in the knowledge that Moscow would refuse them.",
-        "The division of Europe followed directly from that refusal, which Washington had anticipated and accepted.",
-        "However dark the Soviet record, the decisions that made the Cold War were taken by Americans pursuing American economic interests."
+        "The division of Europe followed directly from that refusal, which Washington had anticipated and accepted."
       ],
       "wordCount": 139,
       "key": {
         "mainArgument": [
-          7
+          4
         ],
         "concessions": [
           1,
