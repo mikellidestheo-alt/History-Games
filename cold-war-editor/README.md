@@ -51,7 +51,8 @@ All the content lives in **`cold-war-editor/data/manuscripts.json`**. The game r
 The game shows all text exactly as written. A few rules:
 
 - Each manuscript belongs to a day through `"day"`. The game shows a day's manuscripts in the order they appear in the file. A day can have more or fewer than five.
-- Sentence numbers in `key` count from **1**.
+- Sentence numbers in `key` count from **1**. If you reorder sentences, update the numbers in `key` and in the `explanation`.
+- Vary where the main argument sits (first, middle or last sentence), so students cannot score by always tapping the same position.
 - `key.school` must be one of that day's `schoolOptions`, otherwise students cannot choose it.
 - `key.stamp` must match the directive: `"PUBLISH"` if `key.school` is in the day's `publishSchools`, otherwise `"REJECT"`.
 - `key.approach` must be one of the `approaches`, or `null` when the school is `not_blame`.
@@ -80,12 +81,12 @@ JSON does not allow comments, so the notes are shown here after `//`. **Do not**
   },
   "sentences": [                   // one string per sentence; numbered 1, 2, 3… in the key
     "The origins of the present conflict are not obscure.",
-    "…",
-    "Responsibility for the division of Europe therefore rests with the Soviet Union and the doctrine that directs it."
+    "Responsibility for the division of Europe rests with the Soviet Union and the doctrine that directs it.",
+    "…"
   ],
-  "wordCount": 131,                // for your reference; not used by the game
+  "wordCount": 130,                // for your reference; not used by the game
   "key": {
-    "mainArgument": [6, 4],        // sentence(s) accepted as the main argument
+    "mainArgument": [2, 5],        // sentence(s) accepted as the main argument
     "concessions": [],             // highlighted in blue in the review
     "subMessages": [],             // highlighted in green in the review
     "school": "traditionalist",    // a key from "schools", and in this day's schoolOptions
@@ -94,7 +95,7 @@ JSON does not allow comments, so the notes are shown here after `//`. **Do not**
     "stamp": "PUBLISH"             // what the day's directive requires for this school
   },
   "trap": "none",                  // a key from "traps"; shown if the student gets A or B wrong
-  "explanation": "Soviet expansion is presented as the product of communist doctrine (sentence 4)…",
+  "explanation": "Soviet expansion is presented as the product of communist doctrine (sentence 5)…",
   "anchors": [                     // real events, listed in the review
     "Yalta Conference and the Declaration on Liberated Europe (February 1945)",
     "Truman Doctrine (March 1947)"
