@@ -16,12 +16,13 @@ It works on iPad and iPhone (Safari), as well as on laptops. Students can tap **
 1. On the title screen, students type their name and tap **Start work**. Progress saves automatically on the device, so **Continue** picks up where they left off. **Restart game** starts again from Day 1.
 2. Each day opens with a **morning briefing**: the year, the political climate and the board's **directive** (what Meridian Press is willing to publish that year).
 3. At the desk, each of the five manuscripts shows a **dossier** (the author's background) and the **extract**. The **rulebook** can be opened at any time. It holds the day's directive, the definitions of the interpretations available that day, the five approaches and a tip. Anything new since the previous day is marked **NEW**.
-4. For every manuscript the student completes four steps, in order:
+4. For every manuscript the student completes five steps, in order:
    - **A. Flag the main argument**: tap the sentence that carries the historian's central claim, then confirm. Students can change their choice until they confirm.
-   - **B. Classify**: choose the interpretation (only the day's options are shown).
-   - **C. Approach**: choose the approach. This step is skipped if they chose "Not an argument about blame".
-   - **D. Stamp**: PUBLISH or REJECT, according to the day's directive.
-5. During the day the only feedback is the board's tally, which updates when each stamp lands. At the end of the day there is a full **review**: each extract with sentence numbers, the main argument, concessions and sub-messages highlighted, the student's answers beside the correct ones, the explanation, the historical anchors and (if they got A or B wrong) the trap that caught them. A board memo follows, then the day's integrity score.
+   - **B. Flag the concession**: tap the sentence where the historian admits a point for the other side, or tap **No concession** if there isn't one. The main-argument sentence can't be chosen here.
+   - **C. Classify**: choose the interpretation (only the day's options are shown).
+   - **D. Approach**: choose the approach. This step is skipped if they chose "Not an argument about blame".
+   - **E. Stamp**: PUBLISH or REJECT, according to the day's directive.
+5. During the day the only feedback is the board's tally, which updates when each stamp lands. At the end of the day there is a full **review**: each extract with sentence numbers, the main argument, concessions and sub-messages highlighted, the student's answers beside the correct ones, the explanation, the historical anchors and (if they got A, B or C wrong) the trap that caught them. A board memo follows, then the day's integrity score.
 6. After Day 4 the **final report** gives the overall integrity percentage and rank, board compliance, the trap the student fell into most often, and the debrief. **Show my results card** produces a one-screen summary for students to screenshot and show you.
 
 **On iPhone** the desk uses tabs (Dossier / Extract / Rulebook), with the decision panel fixed at the bottom. **On iPad** everything sits on one desk.
@@ -35,14 +36,15 @@ The points come from `meta.scoring` in the JSON file.
 | Step | Counts towards | Points (current file) |
 |---|---|---|
 | A. Main argument | Scholarly Integrity | 1 (any sentence listed in `key.mainArgument` is correct) |
-| B. Interpretation | Scholarly Integrity | 2 |
-| C. Approach | Scholarly Integrity | 1 (`key.approach` or anything in `key.approachAlsoAccept`) |
-| D. Stamp | Board Compliance | 1 |
+| B. Concession | Scholarly Integrity | 1 (any sentence listed in `key.concessions`; if that list is empty, **No concession** is correct) |
+| C. Interpretation | Scholarly Integrity | 2 |
+| D. Approach | Scholarly Integrity | 1 (`key.approach` or anything in `key.approachAlsoAccept`) |
+| E. Stamp | Board Compliance | 1 |
 
 - **Scholarly Integrity** is hidden during the day and revealed in the end-of-day review. The rank on the final report comes from `endings.integrityBands`.
 - **Board Compliance** is whether the stamp matches what the directive requires for the manuscript's *true* interpretation (`key.stamp`), whatever the student classified it as.
-- **"Not an argument about blame"** follows `meta.scoring.notes`. If it is correct and the student picks it, step C is skipped and its point awarded. If the student picks it wrongly, step C is skipped and its point is lost. If the correct answer is "not_blame" but the student picks another interpretation, they still see step C; no approach can be correct there, so that point is lost.
-- The "most common trap" counts the manuscripts where the student got step A or B wrong, grouped by each manuscript's `trap`. The warm-up `none` is not counted.
+- **"Not an argument about blame"** follows `meta.scoring.notes`. If it is correct and the student picks it, step D is skipped and its point awarded. If the student picks it wrongly, step D is skipped and its point is lost. If the correct answer is "not_blame" but the student picks another interpretation, they still see step D; no approach can be correct there, so that point is lost.
+- The "most common trap" counts the manuscripts where the student got step A, B or C wrong, grouped by each manuscript's `trap`. The warm-up `none` is not counted.
 
 ## Editing or adding manuscripts
 
@@ -52,6 +54,7 @@ The game shows all text exactly as written. A few rules:
 
 - Each manuscript belongs to a day through `"day"`. The game shows a day's manuscripts in the order they appear in the file. A day can have more or fewer than five.
 - Sentence numbers in `key` count from **1**. If you reorder sentences, update the numbers in `key` and in the `explanation`.
+- A sentence cannot be both a main argument and a concession. Leave `concessions` empty (`[]`) for an extract that concedes nothing; students then need to choose **No concession**.
 - Vary where the main argument sits (first, middle or last sentence), so students cannot score by always tapping the same position.
 - `key.school` must be one of that day's `schoolOptions`, otherwise students cannot choose it.
 - `key.stamp` must match the directive: `"PUBLISH"` if `key.school` is in the day's `publishSchools`, otherwise `"REJECT"`.
@@ -66,39 +69,40 @@ JSON does not allow comments, so the notes are shown here after `//`. **Do not**
 
 ```jsonc
 {
-  "id": "1-1",                     // unique id; any text, but keep it unique
+  "id": "1-2",                     // unique id; any text, but keep it unique
   "day": 1,                        // which day it appears on (matches "day" in days)
   "dossier": {
-    "name": "Dr Harold Whitcombe", // write "[Redacted]" to show a blacked-out field
-    "role": "Assistant Professor of Diplomatic History, Lakeview University",
+    "name": "Dr Margaret Ellery",  // write "[Redacted]" to show a blacked-out field
+    "role": "Lecturer in Modern History, Harwell University",
     "nationality": "American",
     "yearWritten": 1953,           // a number, or null when redacted
     "sources": [
-      "Published State Department documents",
-      "Speeches by Soviet leaders"
+      "Memoirs of American and British wartime diplomats",
+      "Translations of Soviet speeches"
     ],
     "redacted": false              // true = anonymised dossier (blacked-out portrait)
   },
   "sentences": [                   // one string per sentence; numbered 1, 2, 3… in the key
-    "The origins of the present conflict are not obscure.",
-    "Responsibility for the division of Europe rests with the Soviet Union and the doctrine that directs it.",
+    "Critics of American policy are fond of listing its mistakes, and some of their charges are fair.",
+    "Washington was slow to explain its aims, and its talk of an 'open door' in Eastern Europe must have sounded to Moscow like interference.",
+    "But misjudgements of tone do not start a cold war.",
+    "The conflict came because the Soviet leadership believed, as a matter of doctrine, that no lasting peace with capitalist states was possible.",
     "…"
   ],
-  "wordCount": 130,                // for your reference; not used by the game
+  "wordCount": 112,                // for your reference; not used by the game
   "key": {
-    "mainArgument": [2, 5],        // sentence(s) accepted as the main argument
-    "concessions": [],             // highlighted in blue in the review
+    "mainArgument": [4],           // sentence(s) accepted as the main argument
+    "concessions": [1, 2],         // any of these scores in step B; [] means "No concession" is correct
     "subMessages": [],             // highlighted in green in the review
     "school": "traditionalist",    // a key from "schools", and in this day's schoolOptions
     "approach": "Ideology",        // one of "approaches"; null if school is "not_blame"
     "approachAlsoAccept": [],      // other approaches that also score
     "stamp": "PUBLISH"             // what the day's directive requires for this school
   },
-  "trap": "none",                  // a key from "traps"; shown if the student gets A or B wrong
-  "explanation": "Soviet expansion is presented as the product of communist doctrine (sentence 5)…",
+  "trap": "concession",            // a key from "traps"; shown if the student gets A, B or C wrong
+  "explanation": "Sentences 1–2 concede American mistakes, but sentence 3 dismisses them…",
   "anchors": [                     // real events, listed in the review
-    "Yalta Conference and the Declaration on Liberated Europe (February 1945)",
-    "Truman Doctrine (March 1947)"
+    "Stalin's election speech (February 1946)"
   ]
 }
 ```

@@ -34,6 +34,10 @@
     var k = m.key || {};
     a = a || {};
     var mainOk = a.main != null && (k.mainArgument || []).indexOf(a.main) >= 0;
+    var cons = k.concessions || [];
+    // 0 means the player chose "No concession", which is right only when the key lists none.
+    var concessionOk = a.concession != null && (a.concession === 0 ? cons.length === 0 : cons.indexOf(a.concession) >= 0);
+    var conPts = typeof sc.concession === 'number' ? sc.concession : 0;
     var schoolOk = a.school != null && a.school === k.school;
     var approachSkipped = a.school === NOT_BLAME;
     var approachOk;
@@ -41,13 +45,13 @@
     else approachOk = k.approach != null && a.approach != null &&
       (a.approach === k.approach || (k.approachAlsoAccept || []).indexOf(a.approach) >= 0);
     var stampOk = a.stamp != null && a.stamp === k.stamp;
-    var max = sc.mainArgument + sc.school + sc.approach;
-    var pts = (mainOk ? sc.mainArgument : 0) + (schoolOk ? sc.school : 0) + (approachOk ? sc.approach : 0);
+    var max = sc.mainArgument + conPts + sc.school + sc.approach;
+    var pts = (mainOk ? sc.mainArgument : 0) + (concessionOk ? conPts : 0) + (schoolOk ? sc.school : 0) + (approachOk ? sc.approach : 0);
     return {
-      mainOk: mainOk, schoolOk: schoolOk, approachOk: approachOk, approachSkipped: approachSkipped,
+      mainOk: mainOk, concessionOk: concessionOk, schoolOk: schoolOk, approachOk: approachOk, approachSkipped: approachSkipped,
       stampOk: stampOk, points: pts, max: max,
       compliance: stampOk ? sc.stamp : 0, complianceMax: sc.stamp,
-      trapHit: !(mainOk && schoolOk)
+      trapHit: !(mainOk && concessionOk && schoolOk)
     };
   };
 

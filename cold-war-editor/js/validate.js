@@ -11,7 +11,7 @@
 
     var meta = data.meta || {};
     var sc = meta.scoring || {};
-    ['mainArgument', 'school', 'approach', 'stamp'].forEach(function (k) {
+    ['mainArgument', 'concession', 'school', 'approach', 'stamp'].forEach(function (k) {
       if (typeof sc[k] !== 'number') p('meta.scoring.' + k + ' should be a number.');
     });
     var approaches = Array.isArray(data.approaches) ? data.approaches : [];
@@ -60,6 +60,9 @@
         (k[f] || []).forEach(function (idx) {
           if (!(Number.isInteger(idx) && idx >= 1 && idx <= n)) p(where + ': key.' + f + ' refers to sentence ' + idx + ', but the extract has ' + n + ' sentences.');
         });
+      });
+      (k.concessions || []).forEach(function (idx) {
+        if ((k.mainArgument || []).indexOf(idx) >= 0) p(where + ': sentence ' + idx + ' is listed as both a main argument and a concession; players cannot flag one sentence twice.');
       });
       if (!schools[k.school]) p(where + ': key.school "' + k.school + '" is not a known school.');
       else if (day && (day.schoolOptions || []).indexOf(k.school) < 0) p(where + ': key.school "' + k.school + '" is not one of day ' + m.day + "'s schoolOptions, so it cannot be chosen.");

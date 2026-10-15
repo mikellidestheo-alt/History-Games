@@ -2,7 +2,7 @@
    The manuscripts file is fetched network-first so a teacher's edits reach students
    as soon as they are online; everything else is served from the cache and refreshed
    in the background. Bump VERSION when you change the code files. */
-var VERSION = 'cwe-v1';
+var VERSION = 'cwe-v2';
 var SHELL = [
   './',
   'index.html',
