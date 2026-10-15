@@ -22,6 +22,8 @@ It works on iPad and iPhone (Safari), as well as on laptops. Students can tap **
    - **C. Flag the concession**: tap the sentence where the historian admits a point for the other side, or tap **No concession** if there isn't one. The main-argument sentence can't be chosen here.
    - **D. Approach**: choose the approach. This step is skipped if they chose "Not an argument about blame".
    - **E. Stamp**: PUBLISH or REJECT, according to the day's directive.
+
+   Before stamping, students can tap any finished letter (A–D) in the progress boxes to go back and change that answer. Their other answers stay selected, so they just confirm forward again. Once a manuscript is stamped, it is final.
 5. During the day the only feedback is the board's tally, which updates when each stamp lands. At the end of the day there is a full **review**: each extract with sentence numbers, the main argument, concessions and sub-messages highlighted, the student's answers beside the correct ones, the explanation, the historical anchors and (if they got A, B or C wrong) the trap that caught them. A board memo follows, then the day's integrity score.
 6. After Day 4 the **final report** gives the overall integrity percentage and rank, board compliance, the trap the student fell into most often, and the debrief. **Show my results card** produces a one-screen summary for students to screenshot and show you.
 

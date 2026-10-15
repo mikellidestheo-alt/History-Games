@@ -2,7 +2,7 @@
    Run from the repository root (needs Node 18+ and Playwright):
      python3 -m http.server 8765 &
      node cold-war-editor/tests/e2e.mjs
-   Options: BASE_URL=http://127.0.0.1:8765/cold-war-editor/  ENGINES=webkit,chromium  SHOTS=dir */
+   Options: BASE_URL=http://127.0.0.1:8765/cold-war-editor/  ENGINES=webkit,chromium  VIEWPORT=430  SHOTS=dir */
 import { createRequire } from 'module';
 import { execSync } from 'child_process';
 import fs from 'fs';
@@ -116,6 +116,9 @@ async function startGame(page, name) {
 async function playManuscript(page, m, day, mode, doLayout, tag) {
   const k = m.key;
   await page.waitForSelector(`.manuscript[data-ms-id="${m.id}"]`, { state: "attached" });
+  const startStep = await page.$eval('.desk', e => e.getAttribute('data-step'));
+  check(startStep === 'A', `${m.id}: manuscript opened at step ${startStep}, not A`);
+  if (startStep !== 'A') console.log('   debug draft:', JSON.stringify(await page.evaluate(() => window.CWE._debug.state().draft)));
   const n = await page.$$eval('.manuscript .sentence', s => s.length);
   check(n === m.sentences.length, `${m.id}: expected ${m.sentences.length} sentences, found ${n}`);
   const texts = await page.$$eval('.manuscript .sentence', s => s.map(x => x.textContent));
@@ -149,7 +152,8 @@ async function playManuscript(page, m, day, mode, doLayout, tag) {
   check((await page.textContent('.step-body h3')).includes('Flag the concession'), `${m.id}: step C is not the concession step`);
   if (doLayout) await layoutCheck(page, `${tag} ${m.id} step C`);
   check(await page.$eval(`.sentence[data-index="${main}"]`, e => e.getAttribute('aria-disabled')) === 'true', `${m.id}: main sentence not locked in step C`);
-  await page.click(`.sentence[data-index="${main}"]`, { force: true });
+  // Dispatch the tap on the sentence itself: a forced click at its centre could land on the fixed panel.
+  await page.$eval(`.sentence[data-index="${main}"]`, e => e.click());
   check(await page.$$eval('.sentence.selected-con', s => s.length) === 0, `${m.id}: main-argument sentence could be flagged as the concession`);
   const cons = k.concessions;
   const nonKey = [...Array(m.sentences.length).keys()].map(i => i + 1).find(i => i !== main && !cons.includes(i));
@@ -177,9 +181,37 @@ async function playManuscript(page, m, day, mode, doLayout, tag) {
   }
   await page.waitForSelector('[data-stamp]');
   if (doLayout) await layoutCheck(page, `${tag} ${m.id} step E`);
+  if (doLayout) await goBackAndReturn(page, m, main, school);
   const stamp = mode === 'wrong' ? (k.stamp === 'PUBLISH' ? 'REJECT' : 'PUBLISH') : k.stamp;
   await page.click(`[data-stamp="${stamp}"]`);
   await page.waitForSelector('.stamp-mark');
+}
+
+/* From step E, tap letter A to go back: earlier answers must still be selected,
+   and confirming forward must return to the stamp step. Then do the same from C. */
+async function goBackAndReturn(page, m, main, school) {
+  const heading = () => page.textContent('.step-body h3');
+  await page.click('[data-step-back=A]');
+  check((await heading()).includes('Flag the main argument'), `${m.id}: tapping A did not go back to step A`);
+  check(await page.$eval(`.sentence[data-index="${main}"]`, e => e.classList.contains('selected')), `${m.id}: main flag lost after going back`);
+  const conBefore = await page.$$eval('.sentence.selected-con', s => s.map(x => x.dataset.index));
+  await page.click('[data-action=confirm]');
+  check(await page.$eval(`[data-school="${school}"]`, e => e.getAttribute('aria-pressed')) === 'true', `${m.id}: school choice lost after going back`);
+  await page.click('[data-action=confirm]');
+  const conAfter = await page.$$eval('.sentence.selected-con', s => s.map(x => x.dataset.index));
+  check(JSON.stringify(conBefore) === JSON.stringify(conAfter), `${m.id}: concession flag changed after going back`);
+  await page.click('[data-action=confirm]');
+  if (school !== 'not_blame') {
+    check(await page.$('[data-approach][aria-pressed=true]') !== null, `${m.id}: approach choice lost after going back`);
+    await page.click('[data-action=confirm]');
+  }
+  await page.waitForSelector('[data-stamp]');
+  await page.click('[data-step-back=C]');
+  check((await heading()).includes('Flag the concession'), `${m.id}: tapping C did not go back to step C`);
+  check(await page.$('[data-step-back=D], [data-step-back=E]') === null, `${m.id}: later steps should not be tappable`);
+  await page.click('[data-action=confirm]');
+  if (school !== 'not_blame') await page.click('[data-action=confirm]');
+  await page.waitForSelector('[data-stamp]');
 }
 
 async function playDay(page, dayIndex, mode, doLayout, tag) {
@@ -355,7 +387,7 @@ async function runViewport(browserType, vp) {
     if (!bt) continue;
     try { const b = await bt.launch(); await b.close(); }
     catch (e) { console.log(`\n(${name} is not installed here: skipped)`); continue; }
-    for (const vp of VIEWPORTS) await runViewport(bt, vp);
+    for (const vp of VIEWPORTS.filter(v => !process.env.VIEWPORT || v.name.includes(process.env.VIEWPORT))) await runViewport(bt, vp);
     ran++;
   }
   console.log(`\n${passes} checks passed, ${failures} failed, ${ran} engine(s) run.`);

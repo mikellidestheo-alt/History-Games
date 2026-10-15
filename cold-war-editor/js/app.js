@@ -529,7 +529,10 @@
   function onSentence(idx) {
     if (ui.busy || !S.draft) return;
     var draft = S.draft;
-    if (draft.step === 'A') draft.main = draft.main === idx ? null : idx;
+    if (draft.step === 'A') {
+      draft.main = draft.main === idx ? null : idx;
+      if (draft.main != null && draft.concession === draft.main) draft.concession = null;
+    }
     else if (draft.step === 'C') {
       if (idx === draft.main) return; // the main argument cannot also be the concession
       draft.concession = draft.concession === idx ? null : idx;
@@ -560,16 +563,22 @@
     return wrap;
   }
 
+  /* Finished steps are buttons: tapping one goes back to it with the earlier answers still
+     selected, so the player only changes what they want and confirms forward again. */
   function stepper(draft) {
     var cur = STEPS.indexOf(draft.step);
     var skipD = game.skipsApproach(draft.school) && cur >= 2;
     return h('ol', { class: 'stepper', 'aria-label': 'Progress' }, STEPS.map(function (s, i) {
-      var cls = 'step';
-      var state = 'to do';
-      if (s === 'D' && skipD) { cls += ' skipped'; state = 'skipped'; }
-      else if (i < cur) { cls += ' done'; state = 'done'; }
-      else if (i === cur) { cls += ' current'; state = 'current'; }
-      return h('li', { class: cls, 'aria-label': 'Step ' + s + ': ' + state, 'aria-current': i === cur ? 'step' : null }, s);
+      if (s === 'D' && skipD) return h('li', { class: 'step skipped', 'aria-label': 'Step D: skipped' }, s);
+      if (i < cur) {
+        return h('li', { class: 'step done' },
+          h('button', {
+            type: 'button', class: 'step-back', 'data-step-back': s, 'aria-label': 'Step ' + s + ': done. Tap to go back and change it',
+            on: { click: function () { if (!ui.busy && S.draft) goTo(s); } }
+          }, s));
+      }
+      if (i === cur) return h('li', { class: 'step current', 'aria-label': 'Step ' + s + ': current', 'aria-current': 'step' }, s);
+      return h('li', { class: 'step', 'aria-label': 'Step ' + s + ': to do' }, s);
     }));
   }
 
@@ -662,6 +671,7 @@
       if (cur > 2) chips.appendChild(h('li', null, h('b', null, 'C'), draft.concession === NO_CONCESSION ? ' no concession' : ' flagged'));
       if (cur > 3) chips.appendChild(h('li', null, h('b', null, 'D'), ' ' + (game.skipsApproach(draft.school) ? 'skipped' : draft.approach)));
       panel.appendChild(chips);
+      panel.appendChild(h('p', { class: 'back-hint' }, 'Tap a finished letter above to go back and change an answer.'));
     }
   }
 
