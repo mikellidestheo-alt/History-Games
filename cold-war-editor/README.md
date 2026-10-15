@@ -18,8 +18,8 @@ It works on iPad and iPhone (Safari), as well as on laptops. Students can tap **
 3. At the desk, each of the five manuscripts shows a **dossier** (the author's background) and the **extract**. The **rulebook** can be opened at any time. It holds the day's directive, the definitions of the interpretations available that day, the five approaches and a tip. Anything new since the previous day is marked **NEW**.
 4. For every manuscript the student completes five steps, in order:
    - **A. Flag the main argument**: tap the sentence that carries the historian's central claim, then confirm. Students can change their choice until they confirm.
-   - **B. Flag the concession**: tap the sentence where the historian admits a point for the other side, or tap **No concession** if there isn't one. The main-argument sentence can't be chosen here.
-   - **C. Classify**: choose the interpretation (only the day's options are shown).
+   - **B. Classify**: choose the interpretation (only the day's options are shown).
+   - **C. Flag the concession**: tap the sentence where the historian admits a point for the other side, or tap **No concession** if there isn't one. The main-argument sentence can't be chosen here.
    - **D. Approach**: choose the approach. This step is skipped if they chose "Not an argument about blame".
    - **E. Stamp**: PUBLISH or REJECT, according to the day's directive.
 5. During the day the only feedback is the board's tally, which updates when each stamp lands. At the end of the day there is a full **review**: each extract with sentence numbers, the main argument, concessions and sub-messages highlighted, the student's answers beside the correct ones, the explanation, the historical anchors and (if they got A, B or C wrong) the trap that caught them. A board memo follows, then the day's integrity score.
@@ -36,8 +36,8 @@ The points come from `meta.scoring` in the JSON file.
 | Step | Counts towards | Points (current file) |
 |---|---|---|
 | A. Main argument | Scholarly Integrity | 1 (any sentence listed in `key.mainArgument` is correct) |
-| B. Concession | Scholarly Integrity | 1 (any sentence listed in `key.concessions`; if that list is empty, **No concession** is correct) |
-| C. Interpretation | Scholarly Integrity | 2 |
+| B. Interpretation | Scholarly Integrity | 2 |
+| C. Concession | Scholarly Integrity | 1 (any sentence listed in `key.concessions`; if that list is empty, **No concession** is correct) |
 | D. Approach | Scholarly Integrity | 1 (`key.approach` or anything in `key.approachAlsoAccept`) |
 | E. Stamp | Board Compliance | 1 |
 
@@ -92,7 +92,7 @@ JSON does not allow comments, so the notes are shown here after `//`. **Do not**
   "wordCount": 112,                // for your reference; not used by the game
   "key": {
     "mainArgument": [4],           // sentence(s) accepted as the main argument
-    "concessions": [1, 2],         // any of these scores in step B; [] means "No concession" is correct
+    "concessions": [1, 2],         // any of these scores in step C; [] means "No concession" is correct
     "subMessages": [],             // highlighted in green in the review
     "school": "traditionalist",    // a key from "schools", and in this day's schoolOptions
     "approach": "Ideology",        // one of "approaches"; null if school is "not_blame"
@@ -116,7 +116,7 @@ There are no accounts, no tracking and no server. Names and progress stay only i
 ## For maintainers
 
 - Plain static files: `index.html`, `css/`, `js/`, `data/`, `icons/`, `manifest.webmanifest`, `sw.js`. No build step and no external libraries.
-- `sw.js` caches the game for offline use. It fetches `manuscripts.json` from the network first, so your content edits arrive straight away. If you change the code files, raise `VERSION` in `sw.js` so devices refresh their copy.
+- `sw.js` caches the game for offline use. It always fetches every file from the network first, so online devices get your latest content and code on their next visit; the cache is only used offline. If you add or rename files, update the list and raise `VERSION` in `sw.js`.
 - `tests/validate-content.mjs` runs the content checks: `node cold-war-editor/tests/validate-content.mjs`.
 - `tests/e2e.mjs` plays the whole game at iPhone and iPad sizes with Playwright. Start a local server from the repository root (`python3 -m http.server 8765`), then run `node cold-war-editor/tests/e2e.mjs`.
 - `tools/make_icons.py` regenerates the home-screen icons (needs Python and Pillow).

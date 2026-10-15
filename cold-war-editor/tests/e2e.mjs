@@ -135,10 +135,20 @@ async function playManuscript(page, m, day, mode, doLayout, tag) {
   check(await page.$$eval('.sentence.selected', s => s.length) === 1, `${m.id}: more than one sentence selected`);
   await page.click('[data-action=confirm]');
 
-  // Step B: concession. The main-argument sentence must not be selectable as the concession.
-  await page.waitForSelector('[data-action=no-concession]');
+  check((await page.textContent('.step-body h3')).includes('Classify the interpretation'), `${m.id}: step B is not the classify step`);
+  let school = k.school;
+  if (mode === 'wrong') school = day.schoolOptions.find(s => s !== k.school);
+  const opts = await page.$$eval('[data-school]', b => b.map(x => x.getAttribute('data-school')));
+  check(JSON.stringify(opts) === JSON.stringify(day.schoolOptions), `${m.id}: school options ${opts} differ from day ${day.day} schoolOptions`);
+  await page.click(`[data-school="${school}"]`);
   if (doLayout) await layoutCheck(page, `${tag} ${m.id} step B`);
-  check(await page.$eval(`.sentence[data-index="${main}"]`, e => e.getAttribute('aria-disabled')) === 'true', `${m.id}: main sentence not locked in step B`);
+  await page.click('[data-action=confirm]');
+
+  // Step C: concession. The main-argument sentence must not be selectable as the concession.
+  await page.waitForSelector('[data-action=no-concession]');
+  check((await page.textContent('.step-body h3')).includes('Flag the concession'), `${m.id}: step C is not the concession step`);
+  if (doLayout) await layoutCheck(page, `${tag} ${m.id} step C`);
+  check(await page.$eval(`.sentence[data-index="${main}"]`, e => e.getAttribute('aria-disabled')) === 'true', `${m.id}: main sentence not locked in step C`);
   await page.click(`.sentence[data-index="${main}"]`, { force: true });
   check(await page.$$eval('.sentence.selected-con', s => s.length) === 0, `${m.id}: main-argument sentence could be flagged as the concession`);
   const cons = k.concessions;
@@ -153,14 +163,6 @@ async function playManuscript(page, m, day, mode, doLayout, tag) {
     await page.click(`.sentence[data-index="${pick}"]`);
     check(await page.$$eval('.sentence.selected-con', s => s.length) === 1, `${m.id}: expected exactly one concession flagged`);
   }
-  await page.click('[data-action=confirm]');
-
-  let school = k.school;
-  if (mode === 'wrong') school = day.schoolOptions.find(s => s !== k.school);
-  const opts = await page.$$eval('[data-school]', b => b.map(x => x.getAttribute('data-school')));
-  check(JSON.stringify(opts) === JSON.stringify(day.schoolOptions), `${m.id}: school options ${opts} differ from day ${day.day} schoolOptions`);
-  await page.click(`[data-school="${school}"]`);
-  if (doLayout) await layoutCheck(page, `${tag} ${m.id} step C`);
   await page.click('[data-action=confirm]');
 
   if (school !== 'not_blame') {

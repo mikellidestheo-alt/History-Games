@@ -107,11 +107,11 @@
 
   /* ---------- Save state ---------- */
   function newState(name) {
-    return { v: 2, name: name, day: 0, ms: 0, phase: 'briefing', answers: {}, draft: null, finishedAt: null };
+    return { v: 3, name: name, day: 0, ms: 0, phase: 'briefing', answers: {}, draft: null, finishedAt: null };
   }
   function loadState() {
     var s = store.get(SAVE_KEY);
-    if (!s || s.v !== 2 || !s.answers) return null;
+    if (!s || s.v !== 3 || !s.answers) return null;
     if (s.day >= game.days.length) { s.day = game.days.length - 1; s.phase = 'final'; }
     return s;
   }
@@ -191,7 +191,7 @@
         h('p', { class: 'title-sub' }, px(meta.subtitle)),
         h('p', { class: 'title-course', text: meta.course }),
         h('p', { class: 'title-intro' },
-          'You are a junior editor at Meridian Press, an American academic publisher. Over four working days between 1953 and 1997, historians send you manuscripts about the origins of the Cold War. For each one: flag the main argument, flag the concession, classify the interpretation, identify the approach, then stamp it. The board watches your stamps. Your scholarly integrity is revealed at the end of each day.'),
+          'You are a junior editor at Meridian Press, an American academic publisher. Over four working days between 1953 and 1997, historians send you manuscripts about the origins of the Cold War. For each one: flag the main argument, classify the interpretation, flag the concession, identify the approach, then stamp it. The board watches your stamps. Your scholarly integrity is revealed at the end of each day.'),
         h('div', { class: 'field' },
           h('label', { for: 'player-name' }, 'Your name'),
           nameInput, nameMsg),
@@ -502,11 +502,11 @@
     else window.addEventListener('resize', upd);
   }
 
-  /* Steps: A main argument, B concession, C interpretation, D approach, E stamp.
+  /* Steps: A main argument, B interpretation, C concession, D approach, E stamp.
      draft.concession: null = not chosen yet, 0 = "No concession", n = sentence n. */
   var STEPS = ['A', 'B', 'C', 'D', 'E'];
   var NO_CONCESSION = 0;
-  function flagStep(step) { return step === 'A' || step === 'B'; }
+  function flagStep(step) { return step === 'A' || step === 'C'; }
 
   function renderSentences() {
     var draft = S.draft;
@@ -519,9 +519,9 @@
       var isCon = draft.concession === idx;
       sp.classList.toggle('selected', isMain);
       sp.classList.toggle('selected-con', isCon);
-      var pressed = draft.step === 'B' ? isCon : isMain;
+      var pressed = draft.step === 'C' ? isCon : isMain;
       sp.setAttribute('aria-pressed', pressed ? 'true' : 'false');
-      var locked = !flagStep(draft.step) || (draft.step === 'B' && isMain);
+      var locked = !flagStep(draft.step) || (draft.step === 'C' && isMain);
       if (locked) sp.setAttribute('aria-disabled', 'true'); else sp.removeAttribute('aria-disabled');
     });
   }
@@ -530,7 +530,7 @@
     if (ui.busy || !S.draft) return;
     var draft = S.draft;
     if (draft.step === 'A') draft.main = draft.main === idx ? null : idx;
-    else if (draft.step === 'B') {
+    else if (draft.step === 'C') {
       if (idx === draft.main) return; // the main argument cannot also be the concession
       draft.concession = draft.concession === idx ? null : idx;
     } else return;
@@ -562,7 +562,7 @@
 
   function stepper(draft) {
     var cur = STEPS.indexOf(draft.step);
-    var skipD = game.skipsApproach(draft.school) && cur >= 3;
+    var skipD = game.skipsApproach(draft.school) && cur >= 2;
     return h('ol', { class: 'stepper', 'aria-label': 'Progress' }, STEPS.map(function (s, i) {
       var cls = 'step';
       var state = 'to do';
@@ -612,8 +612,16 @@
       body.appendChild(h('div', { class: 'step-actions' }, openExtract,
         btn('Confirm flag', function () { if (draft.main) goTo('B'); }, 'btn-primary', { 'data-action': 'confirm', disabled: draft.main ? null : true })));
     } else if (draft.step === 'B') {
+      body.appendChild(stepTitle('B', 'Classify the interpretation'));
+      body.appendChild(optionGrid((d.schoolOptions || []).map(function (id) { return { value: id, label: game.schoolLabel(id) }; }), draft.school, function (v) {
+        draft.school = v; save(); audio.tick(); renderPanel();
+      }, 'data-school'));
+      body.appendChild(h('div', { class: 'step-actions' }, btn('Confirm', function () {
+        if (draft.school) goTo('C');
+      }, 'btn-primary', { 'data-action': 'confirm', disabled: draft.school ? null : true })));
+    } else if (draft.step === 'C') {
       var chosen = draft.concession != null;
-      body.appendChild(stepTitle('B', 'Flag the concession'));
+      body.appendChild(stepTitle('C', 'Flag the concession'));
       body.appendChild(h('p', { class: 'step-help' }, 'Tap the sentence where the historian admits a point for the other side. If they never do, choose No concession.'));
       body.appendChild(h('p', { class: 'flag-status con' + (chosen ? ' has-flag' : '') }, art.icon('flag', { r: '#2d6fb3' }),
         draft.concession ? ' One sentence flagged' : (draft.concession === NO_CONCESSION ? ' No concession chosen' : ' Nothing flagged yet')));
@@ -623,17 +631,11 @@
           on: { click: function () { draft.concession = draft.concession === NO_CONCESSION ? null : NO_CONCESSION; save(); audio.tick(); renderSentences(); renderPanel(); } }
         }, 'No concession')));
       body.appendChild(h('div', { class: 'step-actions' },
-        btn('Confirm', function () { if (draft.concession != null) goTo('C'); }, 'btn-primary', { 'data-action': 'confirm', disabled: chosen ? null : true })));
-    } else if (draft.step === 'C') {
-      body.appendChild(stepTitle('C', 'Classify the interpretation'));
-      body.appendChild(optionGrid((d.schoolOptions || []).map(function (id) { return { value: id, label: game.schoolLabel(id) }; }), draft.school, function (v) {
-        draft.school = v; save(); audio.tick(); renderPanel();
-      }, 'data-school'));
-      body.appendChild(h('div', { class: 'step-actions' }, btn('Confirm', function () {
-        if (!draft.school) return;
-        if (game.skipsApproach(draft.school)) { draft.approach = null; goTo('E'); }
-        else goTo('D');
-      }, 'btn-primary', { 'data-action': 'confirm', disabled: draft.school ? null : true })));
+        btn('Confirm', function () {
+          if (draft.concession == null) return;
+          if (game.skipsApproach(draft.school)) { draft.approach = null; goTo('E'); }
+          else goTo('D');
+        }, 'btn-primary', { 'data-action': 'confirm', disabled: chosen ? null : true })));
     } else if (draft.step === 'D') {
       body.appendChild(stepTitle('D', 'Identify the approach'));
       body.appendChild(optionGrid(DATA.approaches.map(function (a) { return { value: a, label: a }; }), draft.approach, function (v) {
@@ -656,8 +658,8 @@
     if (cur > 0) {
       var chips = h('ul', { class: 'choices', 'aria-label': 'Your choices so far' });
       chips.appendChild(h('li', null, h('b', null, 'A'), ' flagged'));
-      if (cur > 1) chips.appendChild(h('li', null, h('b', null, 'B'), draft.concession === NO_CONCESSION ? ' no concession' : ' flagged'));
-      if (cur > 2) chips.appendChild(h('li', null, h('b', null, 'C'), ' ' + game.schoolLabel(draft.school)));
+      if (cur > 1) chips.appendChild(h('li', null, h('b', null, 'B'), ' ' + game.schoolLabel(draft.school)));
+      if (cur > 2) chips.appendChild(h('li', null, h('b', null, 'C'), draft.concession === NO_CONCESSION ? ' no concession' : ' flagged'));
       if (cur > 3) chips.appendChild(h('li', null, h('b', null, 'D'), ' ' + (game.skipsApproach(draft.school) ? 'skipped' : draft.approach)));
       panel.appendChild(chips);
     }
@@ -785,8 +787,8 @@
     }
     var rows = [
       ['A', 'Main argument', a.main ? 'Sentence ' + a.main : 'None', mainCorrect, s.mainOk],
-      ['B', 'Concession', conYours, conCorrect, s.concessionOk],
-      ['C', 'Interpretation', a.school ? game.schoolLabel(a.school) : 'None', game.schoolLabel(k.school), s.schoolOk],
+      ['B', 'Interpretation', a.school ? game.schoolLabel(a.school) : 'None', game.schoolLabel(k.school), s.schoolOk],
+      ['C', 'Concession', conYours, conCorrect, s.concessionOk],
       ['D', 'Approach', s.approachSkipped ? 'Skipped' : (a.approach || 'None'), apCorrect, s.approachOk],
       ['E', 'Stamp', a.stamp || 'None', k.stamp, s.stampOk]
     ];

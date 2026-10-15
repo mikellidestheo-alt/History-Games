@@ -1,8 +1,8 @@
 /* Offline support for The Editor's Desk. Scope: this folder only.
-   The manuscripts file is fetched network-first so a teacher's edits reach students
-   as soon as they are online; everything else is served from the cache and refreshed
-   in the background. Bump VERSION when you change the code files. */
-var VERSION = 'cwe-v2';
+   Network first for every file: when a device is online it always gets the latest game
+   code and manuscripts, so updates appear on the next visit. The cache is only used when
+   the device is offline. Bump VERSION when you change the list of files. */
+var VERSION = 'cwe-v3';
 var SHELL = [
   './',
   'index.html',
@@ -25,7 +25,10 @@ var SHELL = [
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
-    caches.open(VERSION).then(function (cache) { return cache.addAll(SHELL); }).then(function () { return self.skipWaiting(); })
+    caches.open(VERSION).then(function (cache) {
+      // Bypass the browser's HTTP cache so the offline copy is the current version.
+      return cache.addAll(SHELL.map(function (u) { return new Request(u, { cache: 'reload' }); }));
+    }).then(function () { return self.skipWaiting(); })
   );
 });
 
@@ -52,33 +55,16 @@ self.addEventListener('fetch', function (event) {
   var scope = new URL('./', self.location).pathname;
   if (url.pathname.indexOf(scope) !== 0) return;
 
-  if (/\/data\/manuscripts\.json$/.test(url.pathname) || req.mode === 'navigate') {
-    // Network first, cache fallback.
-    event.respondWith(
-      fetch(req).then(function (res) {
-        if (res && res.ok) {
-          var copy = res.clone();
-          caches.open(VERSION).then(function (c) { c.put(cacheKey(req), copy); });
-        }
-        return res;
-      }).catch(function () {
-        return caches.match(cacheKey(req)).then(function (hit) {
-          return hit || (req.mode === 'navigate' ? caches.match(new URL('index.html', self.location).toString()) : undefined);
-        });
-      })
-    );
-    return;
-  }
-
-  // Stale-while-revalidate for the app shell.
   event.respondWith(
-    caches.open(VERSION).then(function (cache) {
-      return cache.match(cacheKey(req)).then(function (hit) {
-        var net = fetch(req).then(function (res) {
-          if (res && res.ok) cache.put(cacheKey(req), res.clone());
-          return res;
-        }).catch(function () { return hit; });
-        return hit || net;
+    fetch(req, { cache: 'no-cache' }).then(function (res) {
+      if (res && res.ok) {
+        var copy = res.clone();
+        caches.open(VERSION).then(function (c) { c.put(cacheKey(req), copy); });
+      }
+      return res;
+    }).catch(function () {
+      return caches.match(cacheKey(req)).then(function (hit) {
+        return hit || (req.mode === 'navigate' ? caches.match(new URL('index.html', self.location).toString()) : undefined);
       });
     })
   );
