@@ -383,12 +383,21 @@ body[data-era="1"] .desk {
 .pip { width: 12px; height: 12px; border: 2px solid var(--ink); background: transparent; display: inline-block; }
 .pip-ok { background: var(--ok); }
 .pip-bad { background: var(--bad); }
-.stepper { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+.stepper { display: flex; gap: 4px; list-style: none; margin: 0 0 0 auto; padding: 0; }
 .step {
-  width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
-  border: 3px solid var(--ink); font: 800 0.9rem var(--mono); background: var(--paper);
+  position: relative;
+  width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  border: 3px solid var(--ink); font: 800 1rem var(--mono); background: var(--paper);
 }
 .step.done { background: var(--ink); color: var(--paper); }
+.step-back {
+  position: absolute; top: -3px; left: -3px; width: 44px; height: 44px; padding: 0;
+  border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit;
+}
+.step-back::after { content: ""; position: absolute; right: 3px; bottom: 3px; border: 4px solid transparent; border-right-color: var(--accent); border-bottom-color: var(--accent); }
+.step-back:active { background: rgba(255, 255, 255, 0.2); }
+.step-back:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.back-hint { font-size: 0.78rem; color: var(--ink-soft); margin: 4px 0 0; }
 .step.current { background: var(--accent); }
 .step.skipped { border-style: dashed; color: #8a8273; text-decoration: line-through; }
 .step-body h3 { font-size: 1.08rem; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
