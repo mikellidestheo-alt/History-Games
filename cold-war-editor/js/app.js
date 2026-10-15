@@ -107,11 +107,11 @@
 
   /* ---------- Save state ---------- */
   function newState(name) {
-    return { v: 1, name: name, day: 0, ms: 0, phase: 'briefing', answers: {}, draft: null, finishedAt: null };
+    return { v: 2, name: name, day: 0, ms: 0, phase: 'briefing', answers: {}, draft: null, finishedAt: null };
   }
   function loadState() {
     var s = store.get(SAVE_KEY);
-    if (!s || s.v !== 1 || !s.answers) return null;
+    if (!s || s.v !== 2 || !s.answers) return null;
     if (s.day >= game.days.length) { s.day = game.days.length - 1; s.phase = 'final'; }
     return s;
   }
@@ -191,7 +191,7 @@
         h('p', { class: 'title-sub' }, px(meta.subtitle)),
         h('p', { class: 'title-course', text: meta.course }),
         h('p', { class: 'title-intro' },
-          'You are a junior editor at Meridian Press, an American academic publisher. Over four working days between 1953 and 1997, historians send you manuscripts about the origins of the Cold War. For each one: flag the main argument, classify the interpretation, identify the approach, then stamp it. The board watches your stamps. Your scholarly integrity is revealed at the end of each day.'),
+          'You are a junior editor at Meridian Press, an American academic publisher. Over four working days between 1953 and 1997, historians send you manuscripts about the origins of the Cold War. For each one: flag the main argument, flag the concession, classify the interpretation, identify the approach, then stamp it. The board watches your stamps. Your scholarly integrity is revealed at the end of each day.'),
         h('div', { class: 'field' },
           h('label', { for: 'player-name' }, 'Your name'),
           nameInput, nameMsg),
@@ -373,7 +373,7 @@
   /* ---------- Desk ---------- */
   function currentMs() { return game.manuscriptsFor(S.day)[S.ms]; }
   function ensureDraft(m) {
-    if (!S.draft || S.draft.msId !== m.id) S.draft = { msId: m.id, step: 'A', main: null, school: null, approach: null };
+    if (!S.draft || S.draft.msId !== m.id) S.draft = { msId: m.id, step: 'A', main: null, concession: null, school: null, approach: null };
     return S.draft;
   }
   function tabsVisible() {
@@ -502,6 +502,12 @@
     else window.addEventListener('resize', upd);
   }
 
+  /* Steps: A main argument, B concession, C interpretation, D approach, E stamp.
+     draft.concession: null = not chosen yet, 0 = "No concession", n = sentence n. */
+  var STEPS = ['A', 'B', 'C', 'D', 'E'];
+  var NO_CONCESSION = 0;
+  function flagStep(step) { return step === 'A' || step === 'B'; }
+
   function renderSentences() {
     var draft = S.draft;
     var desk = document.querySelector('.desk');
@@ -509,16 +515,25 @@
     desk.setAttribute('data-step', draft.step);
     desk.querySelectorAll('.sentence').forEach(function (sp) {
       var idx = +sp.getAttribute('data-index');
-      var on = draft.main === idx;
-      sp.classList.toggle('selected', on);
-      sp.setAttribute('aria-pressed', on ? 'true' : 'false');
-      if (draft.step !== 'A') sp.setAttribute('aria-disabled', 'true'); else sp.removeAttribute('aria-disabled');
+      var isMain = draft.main === idx;
+      var isCon = draft.concession === idx;
+      sp.classList.toggle('selected', isMain);
+      sp.classList.toggle('selected-con', isCon);
+      var pressed = draft.step === 'B' ? isCon : isMain;
+      sp.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+      var locked = !flagStep(draft.step) || (draft.step === 'B' && isMain);
+      if (locked) sp.setAttribute('aria-disabled', 'true'); else sp.removeAttribute('aria-disabled');
     });
   }
 
   function onSentence(idx) {
-    if (ui.busy || !S.draft || S.draft.step !== 'A') return;
-    S.draft.main = S.draft.main === idx ? null : idx;
+    if (ui.busy || !S.draft) return;
+    var draft = S.draft;
+    if (draft.step === 'A') draft.main = draft.main === idx ? null : idx;
+    else if (draft.step === 'B') {
+      if (idx === draft.main) return; // the main argument cannot also be the concession
+      draft.concession = draft.concession === idx ? null : idx;
+    } else return;
     save(); audio.tick();
     renderSentences(); renderPanel();
   }
@@ -546,16 +561,15 @@
   }
 
   function stepper(draft) {
-    var steps = ['A', 'B', 'C', 'D'];
-    var order = { A: 0, B: 1, C: 2, D: 3 };
-    var skipC = game.skipsApproach(draft.school) && order[draft.step] >= 2;
-    return h('ol', { class: 'stepper', 'aria-label': 'Progress' }, steps.map(function (s) {
+    var cur = STEPS.indexOf(draft.step);
+    var skipD = game.skipsApproach(draft.school) && cur >= 3;
+    return h('ol', { class: 'stepper', 'aria-label': 'Progress' }, STEPS.map(function (s, i) {
       var cls = 'step';
       var state = 'to do';
-      if (s === 'C' && skipC) { cls += ' skipped'; state = 'skipped'; }
-      else if (order[s] < order[draft.step]) { cls += ' done'; state = 'done'; }
-      else if (s === draft.step) { cls += ' current'; state = 'current'; }
-      return h('li', { class: cls, 'aria-label': 'Step ' + s + ': ' + state, 'aria-current': s === draft.step ? 'step' : null }, s);
+      if (s === 'D' && skipD) { cls += ' skipped'; state = 'skipped'; }
+      else if (i < cur) { cls += ' done'; state = 'done'; }
+      else if (i === cur) { cls += ' current'; state = 'current'; }
+      return h('li', { class: cls, 'aria-label': 'Step ' + s + ': ' + state, 'aria-current': i === cur ? 'step' : null }, s);
     }));
   }
 
@@ -570,6 +584,14 @@
     }));
   }
 
+  function goTo(step) {
+    S.draft.step = step; save(); audio.tick(); renderSentences(); renderPanel();
+  }
+
+  function stepTitle(letter, text) {
+    return h('h3', null, h('span', { class: 'step-letter' }, letter), text);
+  }
+
   function renderPanel() {
     var panel = document.querySelector('.desk .decision');
     if (!panel || !S || !S.draft) return;
@@ -580,41 +602,48 @@
     panel.appendChild(h('div', { class: 'decision-top' }, tally(list), stepper(draft)));
     var body = h('div', { class: 'step-body', 'data-step': draft.step });
     panel.appendChild(body);
+    var openExtract = (tabsVisible() && ui.tab !== 'extract')
+      ? btn('Open the extract', function () { setTab('extract'); }, 'btn-secondary', { 'data-action': 'open-extract' }) : null;
 
     if (draft.step === 'A') {
-      body.appendChild(h('h3', null, h('span', { class: 'step-letter' }, 'A'), 'Flag the main argument'));
+      body.appendChild(stepTitle('A', 'Flag the main argument'));
       body.appendChild(h('p', { class: 'step-help' }, "Tap the sentence that carries the historian's central claim. You can change it until you confirm."));
-      var status = h('p', { class: 'flag-status' + (draft.main ? ' has-flag' : '') }, art.icon('flag'), draft.main ? ' One sentence flagged' : ' Nothing flagged yet');
-      body.appendChild(status);
-      var row = h('div', { class: 'step-actions' });
-      if (tabsVisible() && ui.tab !== 'extract') row.appendChild(btn('Open the extract', function () { setTab('extract'); }, 'btn-secondary', { 'data-action': 'open-extract' }));
-      row.appendChild(btn('Confirm flag', function () {
-        if (!draft.main) return;
-        draft.step = 'B'; save(); audio.tick(); renderSentences(); renderPanel();
-      }, 'btn-primary', { 'data-action': 'confirm', disabled: draft.main ? null : true }));
-      body.appendChild(row);
+      body.appendChild(h('p', { class: 'flag-status' + (draft.main ? ' has-flag' : '') }, art.icon('flag'), draft.main ? ' One sentence flagged' : ' Nothing flagged yet'));
+      body.appendChild(h('div', { class: 'step-actions' }, openExtract,
+        btn('Confirm flag', function () { if (draft.main) goTo('B'); }, 'btn-primary', { 'data-action': 'confirm', disabled: draft.main ? null : true })));
     } else if (draft.step === 'B') {
-      body.appendChild(h('h3', null, h('span', { class: 'step-letter' }, 'B'), 'Classify the interpretation'));
+      var chosen = draft.concession != null;
+      body.appendChild(stepTitle('B', 'Flag the concession'));
+      body.appendChild(h('p', { class: 'step-help' }, 'Tap the sentence where the historian admits a point for the other side. If they never do, choose No concession.'));
+      body.appendChild(h('p', { class: 'flag-status con' + (chosen ? ' has-flag' : '') }, art.icon('flag', { r: '#2d6fb3' }),
+        draft.concession ? ' One sentence flagged' : (draft.concession === NO_CONCESSION ? ' No concession chosen' : ' Nothing flagged yet')));
+      body.appendChild(h('div', { class: 'step-actions' }, openExtract,
+        h('button', {
+          type: 'button', class: 'btn btn-secondary btn-none', 'data-action': 'no-concession', 'aria-pressed': draft.concession === NO_CONCESSION ? 'true' : 'false',
+          on: { click: function () { draft.concession = draft.concession === NO_CONCESSION ? null : NO_CONCESSION; save(); audio.tick(); renderSentences(); renderPanel(); } }
+        }, 'No concession')));
+      body.appendChild(h('div', { class: 'step-actions' },
+        btn('Confirm', function () { if (draft.concession != null) goTo('C'); }, 'btn-primary', { 'data-action': 'confirm', disabled: chosen ? null : true })));
+    } else if (draft.step === 'C') {
+      body.appendChild(stepTitle('C', 'Classify the interpretation'));
       body.appendChild(optionGrid((d.schoolOptions || []).map(function (id) { return { value: id, label: game.schoolLabel(id) }; }), draft.school, function (v) {
         draft.school = v; save(); audio.tick(); renderPanel();
       }, 'data-school'));
       body.appendChild(h('div', { class: 'step-actions' }, btn('Confirm', function () {
         if (!draft.school) return;
-        if (game.skipsApproach(draft.school)) { draft.approach = null; draft.step = 'D'; }
-        else draft.step = 'C';
-        save(); audio.tick(); renderSentences(); renderPanel();
+        if (game.skipsApproach(draft.school)) { draft.approach = null; goTo('E'); }
+        else goTo('D');
       }, 'btn-primary', { 'data-action': 'confirm', disabled: draft.school ? null : true })));
-    } else if (draft.step === 'C') {
-      body.appendChild(h('h3', null, h('span', { class: 'step-letter' }, 'C'), 'Identify the approach'));
+    } else if (draft.step === 'D') {
+      body.appendChild(stepTitle('D', 'Identify the approach'));
       body.appendChild(optionGrid(DATA.approaches.map(function (a) { return { value: a, label: a }; }), draft.approach, function (v) {
         draft.approach = v; save(); audio.tick(); renderPanel();
       }, 'data-approach'));
       body.appendChild(h('div', { class: 'step-actions' }, btn('Confirm', function () {
-        if (!draft.approach) return;
-        draft.step = 'D'; save(); audio.tick(); renderSentences(); renderPanel();
+        if (draft.approach) goTo('E');
       }, 'btn-primary', { 'data-action': 'confirm', disabled: draft.approach ? null : true })));
-    } else if (draft.step === 'D') {
-      body.appendChild(h('h3', null, h('span', { class: 'step-letter' }, 'D'), 'Stamp the manuscript'));
+    } else if (draft.step === 'E') {
+      body.appendChild(stepTitle('E', 'Stamp the manuscript'));
       body.appendChild(h('p', { class: 'step-help' }, "Follow today's directive. The board will see your decision."));
       body.appendChild(h('div', { class: 'stamps' },
         h('button', { type: 'button', class: 'stamp-btn stamp-publish', 'data-stamp': 'PUBLISH', on: { click: function () { onStamp('PUBLISH'); } } },
@@ -623,22 +652,24 @@
           h('span', { class: 'stamp-handle', 'aria-hidden': 'true' }), h('span', { class: 'stamp-face' }, px('REJECT')), h('span', { class: 'sr-only' }, 'Stamp: reject'))));
     }
 
-    if (draft.step !== 'A') {
+    var cur = STEPS.indexOf(draft.step);
+    if (cur > 0) {
       var chips = h('ul', { class: 'choices', 'aria-label': 'Your choices so far' });
       chips.appendChild(h('li', null, h('b', null, 'A'), ' flagged'));
-      if (draft.school && draft.step !== 'B') chips.appendChild(h('li', null, h('b', null, 'B'), ' ' + game.schoolLabel(draft.school)));
-      if (draft.step === 'D') chips.appendChild(h('li', null, h('b', null, 'C'), ' ' + (game.skipsApproach(draft.school) ? 'skipped' : draft.approach)));
+      if (cur > 1) chips.appendChild(h('li', null, h('b', null, 'B'), draft.concession === NO_CONCESSION ? ' no concession' : ' flagged'));
+      if (cur > 2) chips.appendChild(h('li', null, h('b', null, 'C'), ' ' + game.schoolLabel(draft.school)));
+      if (cur > 3) chips.appendChild(h('li', null, h('b', null, 'D'), ' ' + (game.skipsApproach(draft.school) ? 'skipped' : draft.approach)));
       panel.appendChild(chips);
     }
   }
 
   function onStamp(kind) {
-    if (ui.busy || !S.draft || S.draft.step !== 'D') return;
+    if (ui.busy || !S.draft || S.draft.step !== 'E') return;
     ui.busy = true;
     var m = currentMs();
     var d = game.days[S.day];
     var draft = S.draft;
-    S.answers[m.id] = { main: draft.main, school: draft.school, approach: game.skipsApproach(draft.school) ? null : draft.approach, stamp: kind };
+    S.answers[m.id] = { main: draft.main, concession: draft.concession, school: draft.school, approach: game.skipsApproach(draft.school) ? null : draft.approach, stamp: kind };
     S.draft = null;
     S.ms++;
     var last = S.ms >= game.manuscriptsFor(S.day).length;
@@ -704,7 +735,8 @@
       h('li', null, h('span', { class: 'sw sw-main' }), 'Main argument'),
       h('li', null, h('span', { class: 'sw sw-con' }), 'Concession'),
       h('li', null, h('span', { class: 'sw sw-sub' }), 'Sub-message'),
-      h('li', null, h('span', { class: 'sw sw-flag' }), 'Your flag'));
+      h('li', null, h('span', { class: 'sw sw-flag' }), 'Your main-argument flag'),
+      h('li', null, h('span', { class: 'sw sw-cflag' }), 'Your concession flag'));
   }
 
   function numberedExtract(m, a) {
@@ -718,11 +750,14 @@
       else if ((k.concessions || []).indexOf(idx) >= 0) { cls += ' rs-con'; role = 'concession'; }
       else if ((k.subMessages || []).indexOf(idx) >= 0) { cls += ' rs-sub'; role = 'sub-message'; }
       var yours = a && a.main === idx;
+      var yoursCon = a && a.concession === idx;
       if (yours) cls += ' rs-flag';
-      var label = 'Sentence ' + idx + (role ? ', ' + role : '') + (yours ? ', your flag' : '');
+      if (yoursCon) cls += ' rs-cflag';
+      var label = 'Sentence ' + idx + (role ? ', ' + role : '') + (yours ? ', your main-argument flag' : '') + (yoursCon ? ', your concession flag' : '');
       p.appendChild(h('span', { class: cls, 'data-index': String(idx) },
         h('span', { class: 'num', 'aria-label': label }, String(idx)),
         yours ? h('span', { class: 'flag-mark', 'aria-hidden': 'true' }, art.icon('flag')) : null,
+        yoursCon ? h('span', { class: 'flag-mark', 'aria-hidden': 'true' }, art.icon('flag', { r: '#2d6fb3' })) : null,
         ' ', s));
       if (i < m.sentences.length - 1) p.appendChild(document.createTextNode(' '));
     });
@@ -739,6 +774,9 @@
     a = a || {};
     var mainCorrect = 'Sentence ' + (k.mainArgument || [])[0];
     if ((k.mainArgument || []).length > 1) mainCorrect += ' (also accepted: ' + k.mainArgument.slice(1).join(', ') + ')';
+    var cons = k.concessions || [];
+    var conCorrect = cons.length ? 'Sentence ' + cons.join(' or ') : 'No concession';
+    var conYours = a.concession == null ? 'None' : (a.concession === 0 ? 'No concession' : 'Sentence ' + a.concession);
     var apCorrect;
     if (k.school === CWE.NOT_BLAME) apCorrect = 'Skipped';
     else {
@@ -747,9 +785,10 @@
     }
     var rows = [
       ['A', 'Main argument', a.main ? 'Sentence ' + a.main : 'None', mainCorrect, s.mainOk],
-      ['B', 'Interpretation', a.school ? game.schoolLabel(a.school) : 'None', game.schoolLabel(k.school), s.schoolOk],
-      ['C', 'Approach', s.approachSkipped ? 'Skipped' : (a.approach || 'None'), apCorrect, s.approachOk],
-      ['D', 'Stamp', a.stamp || 'None', k.stamp, s.stampOk]
+      ['B', 'Concession', conYours, conCorrect, s.concessionOk],
+      ['C', 'Interpretation', a.school ? game.schoolLabel(a.school) : 'None', game.schoolLabel(k.school), s.schoolOk],
+      ['D', 'Approach', s.approachSkipped ? 'Skipped' : (a.approach || 'None'), apCorrect, s.approachOk],
+      ['E', 'Stamp', a.stamp || 'None', k.stamp, s.stampOk]
     ];
     var name = (m.dossier && m.dossier.name) || '';
     return h('article', { class: 'review-card paper-sheet', 'data-ms-id': m.id },

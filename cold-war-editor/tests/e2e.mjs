@@ -135,12 +135,32 @@ async function playManuscript(page, m, day, mode, doLayout, tag) {
   check(await page.$$eval('.sentence.selected', s => s.length) === 1, `${m.id}: more than one sentence selected`);
   await page.click('[data-action=confirm]');
 
+  // Step B: concession. The main-argument sentence must not be selectable as the concession.
+  await page.waitForSelector('[data-action=no-concession]');
+  if (doLayout) await layoutCheck(page, `${tag} ${m.id} step B`);
+  check(await page.$eval(`.sentence[data-index="${main}"]`, e => e.getAttribute('aria-disabled')) === 'true', `${m.id}: main sentence not locked in step B`);
+  await page.click(`.sentence[data-index="${main}"]`, { force: true });
+  check(await page.$$eval('.sentence.selected-con', s => s.length) === 0, `${m.id}: main-argument sentence could be flagged as the concession`);
+  const cons = k.concessions;
+  const nonKey = [...Array(m.sentences.length).keys()].map(i => i + 1).find(i => i !== main && !cons.includes(i));
+  const wantNone = mode === 'correct' ? cons.length === 0 : cons.length > 0;
+  const pick = wantNone ? null : (mode === 'correct' ? cons[0] : nonKey);
+  if (nonKey && nonKey !== pick) await page.click(`.sentence[data-index="${nonKey}"]`); // change of mind
+  if (wantNone) {
+    await page.click('[data-action=no-concession]');
+    check(await page.$$eval('.sentence.selected-con', s => s.length) === 0, `${m.id}: sentence still flagged after choosing No concession`);
+  } else {
+    await page.click(`.sentence[data-index="${pick}"]`);
+    check(await page.$$eval('.sentence.selected-con', s => s.length) === 1, `${m.id}: expected exactly one concession flagged`);
+  }
+  await page.click('[data-action=confirm]');
+
   let school = k.school;
   if (mode === 'wrong') school = day.schoolOptions.find(s => s !== k.school);
   const opts = await page.$$eval('[data-school]', b => b.map(x => x.getAttribute('data-school')));
   check(JSON.stringify(opts) === JSON.stringify(day.schoolOptions), `${m.id}: school options ${opts} differ from day ${day.day} schoolOptions`);
   await page.click(`[data-school="${school}"]`);
-  if (doLayout) await layoutCheck(page, `${tag} ${m.id} step B`);
+  if (doLayout) await layoutCheck(page, `${tag} ${m.id} step C`);
   await page.click('[data-action=confirm]');
 
   if (school !== 'not_blame') {
@@ -148,13 +168,13 @@ async function playManuscript(page, m, day, mode, doLayout, tag) {
     let ap = k.approach;
     if (mode === 'wrong' || ap == null) ap = DATA.approaches.find(a => a !== k.approach && !(k.approachAlsoAccept || []).includes(a));
     await page.click(`[data-approach="${ap}"]`);
-    if (doLayout) await layoutCheck(page, `${tag} ${m.id} step C`);
+    if (doLayout) await layoutCheck(page, `${tag} ${m.id} step D`);
     await page.click('[data-action=confirm]');
   } else {
-    check(await page.$('.step.skipped') !== null, `${m.id}: step C not shown as skipped`);
+    check(await page.$('.step.skipped') !== null, `${m.id}: step D not shown as skipped`);
   }
   await page.waitForSelector('[data-stamp]');
-  if (doLayout) await layoutCheck(page, `${tag} ${m.id} step D`);
+  if (doLayout) await layoutCheck(page, `${tag} ${m.id} step E`);
   const stamp = mode === 'wrong' ? (k.stamp === 'PUBLISH' ? 'REJECT' : 'PUBLISH') : k.stamp;
   await page.click(`[data-stamp="${stamp}"]`);
   await page.waitForSelector('.stamp-mark');
@@ -211,10 +231,10 @@ async function playDay(page, dayIndex, mode, doLayout, tag) {
     const subs = await page.$$eval(card + ' .rs-sub', e => e.map(x => +x.dataset.index));
     check(JSON.stringify(subs.sort()) === JSON.stringify([...m.key.subMessages].sort()), `${m.id}: sub-message highlights wrong`);
     if (mode === 'correct') {
-      check(pts === '4/4', `${m.id}: expected 4/4 integrity, got ${pts}`);
+      check(pts === '5/5', `${m.id}: expected 5/5 integrity, got ${pts}`);
       check(!trap, `${m.id}: trap shown although answers were correct`);
     } else {
-      check(pts === '0/4', `${m.id}: expected 0/4 integrity, got ${pts}`);
+      check(pts === '0/5', `${m.id}: expected 0/5 integrity, got ${pts}`);
       check(!!trap, `${m.id}: trap feedback missing`);
       if (trap) check((await trap.textContent()).includes(DATA.traps[m.trap]), `${m.id}: trap text differs from traps.${m.trap}`);
     }
